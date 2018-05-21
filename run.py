@@ -73,7 +73,7 @@ for url in links_with_text:
 #Today's finance news. It gonna be called in 08:00 every morning. (Except to weekend)
 
 #for i in range(0,10):
-partialUrl = "http://finance.naver.com/news/mainnews.nhn?date=" + "2018-05-21" + "&page=" + "1"
+partialUrl = "http://finance.naver.com/news/mainnews.nhn?date=" + today + "&page=" + "1"
 print(partialUrl)
 response = urllib.request.urlopen(partialUrl)
 soup = BeautifulSoup(response, 'html.parser')
