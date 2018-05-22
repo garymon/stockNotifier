@@ -8,6 +8,8 @@ import util
 import urllib
 import konlpy
 from bs4 import BeautifulSoup
+from os import listdir
+from os.path import isfile, join
 
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -52,14 +54,15 @@ def land_news_notifier():
             page = requests.get('http://land.naver.com' + url)
             soup = BeautifulSoup(page.content, 'html.parser')
             header = soup.find('div', {'class' : 'article_header'}).find('h3').get_text(strip=True)
-            print(header)
             bodyContents = soup.find('div', {'id' : 'articleBody'}).get_text(strip=True)
-            print(bodyContents)
-            f = open("articles/" + today + "/" + "(" + today + ")" + header + ".txt", 'w')
-            f.write(bodyContents)
-            f.close()
-            send_telegram('land.naver.com' + url)
 
+            if check_new_article("(" + today +")" + header + ".txt") == True:
+                send_telegram('land.naver.com' + url)
+                f = open("articles/" + today + "/" + "(" + today + ")" + header + ".txt", 'w')
+                f.write(bodyContents)
+                f.close()
+                print(header)
+                print(bodyContents)
 
 
 #==============================Finance News Notifier ==============================
@@ -89,21 +92,35 @@ def finance_news_notifier():
             page = requests.get('http://finance.naver.com' + url)
             soup = BeautifulSoup(page.content, 'html.parser')
             header = soup.find('div', {'class' : 'article_header'}).find('h3').get_text(strip=True)
-            print(header)
             bodyContents = soup.find('div', {'id' : 'content'}).get_text(strip=True)
-            print(bodyContents)
-            f = open("articles/" + today + "/" + "(" + today + ")" + header + ".txt", 'w')
-            f.write(bodyContents)
-            f.close()
-            send_telegram('finance.naver.com' + url)
+
+            if check_new_article("(" + today +")" + header + ".txt") == True:
+                send_telegram('finance.naver.com' + url)
+                f = open("articles/" + today + "/" + "(" + today + ")" + header + ".txt", 'w')
+                f.write(bodyContents)
+                f.close()
+                print(header)
+                print(bodyContents)
 
 #==============================Sender to telegram==============================
 def send_telegram(msg):
-    bot = telegram.Bot(token = util.my_token)
-    bot.sendMessage(chat_id = util.my_chat_id, text = msg)
+    #bot = telegram.Bot(token = util.my_token)
+    #bot.sendMessage(chat_id = util.my_chat_id, text = msg)
     print('success sending message')
 
 
+#==============================check New?==============================
+def check_new_article(headline):
+    dt = datetime.datetime.now()
+    today = dt.strftime("%Y%m%d")
+    path = "articles/" + today
+    onlyfiles = [f for f in listdir(path) if isfile(join(path, f))]
+    for a in onlyfiles:
+        if a == headline:
+            return False
+    return True
+
+#==============================MAIN==============================
 if __name__ == "__main__":
     stock_notifier()
     finance_news_notifier()

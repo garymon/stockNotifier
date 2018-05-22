@@ -103,6 +103,7 @@ venv.bak/
 
 util.py
 articles/
+shareprice/
 .idea/
 
 # End of https://www.gitignore.io/api/python
